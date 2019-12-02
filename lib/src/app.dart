@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_finance/src/root_page.dart';
 import 'package:flutter_finance/src/ui/authentication/login_page.dart';
 import 'package:flutter_finance/src/ui/home/home_page.dart';
+import 'package:flutter_finance/src/utils/values/colors.dart';
 
 class NuFinance extends StatelessWidget {
   @override
@@ -12,7 +13,7 @@ class NuFinance extends StatelessWidget {
     return MaterialApp(
       title: 'Nu Finance',
       theme: ThemeData(
-        accentColor: Color(0xFF6d2177),
+        accentColor: ColorConstant.colorMainPurple,
         fontFamily: 'SF Pro Display',
       ),
       initialRoute: RootPage.routeName,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_finance/src/utils/values/colors.dart';
 
 class LoginPage extends StatefulWidget {
   static const String routeName = 'login_page';
@@ -29,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Color(0xFF6d2177),
+      backgroundColor: ColorConstant.colorMainPurple,
       resizeToAvoidBottomPadding: false,
       body: ListView(
         children: <Widget>[
