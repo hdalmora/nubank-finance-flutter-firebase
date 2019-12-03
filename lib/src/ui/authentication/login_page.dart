@@ -381,6 +381,106 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                         ),
                                       ),
                                     ),
+
+
+                                    Positioned.fill(
+                                      top: 70.0,
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Column(
+                                          children: <Widget>[
+                                            Container(
+                                              margin: EdgeInsets.only(left: 20.0, right: 20.0),
+                                              child: TextField(
+                                                keyboardType: TextInputType.text,
+                                                decoration: InputDecoration(
+                                                  filled: true,
+                                                  enabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          width: 1,
+                                                          color: Color(0xCC000000)
+                                                      ),
+                                                      borderRadius: BorderRadius.all(Radius.circular(0))
+                                                  ),
+                                                  fillColor: Colors.white,
+                                                  hintText: 'Email...',
+                                                  labelStyle: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.grey
+                                                  ),
+                                                  focusedBorder: UnderlineInputBorder(
+                                                    borderSide: BorderSide(color: ColorConstant.colorMainPurple),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+
+
+                                            Container(
+                                              margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0),
+                                              child: TextField(
+                                                keyboardType: TextInputType.text,
+                                                obscureText: true,
+                                                decoration: InputDecoration(
+                                                  filled: true,
+                                                  enabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          width: 1,
+                                                          color: Color(0xCC000000)
+                                                      ),
+                                                      borderRadius: BorderRadius.all(Radius.circular(0))
+                                                  ),
+                                                  fillColor: Colors.white,
+                                                  hintText: 'Password...',
+                                                  labelStyle: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.grey
+                                                  ),
+                                                  focusedBorder: UnderlineInputBorder(
+                                                    borderSide: BorderSide(color: ColorConstant.colorMainPurple),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
+
+
+                                    Positioned.fill(
+                                      bottom: 15,
+                                      child: Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: GestureDetector(
+                                          onTap: () {
+
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(left: 30.0, right: 30.0),
+                                            alignment: Alignment.center,
+                                            height: 60.0,
+                                            width: MediaQuery.of(context).size.width,
+                                            decoration: BoxDecoration(
+                                                color: Colors.transparent,
+                                                border: Border.all(
+                                                    width: 1,
+                                                    color: ColorConstant.colorMainPurple
+                                                )
+                                            ),
+                                            child: Text(
+                                              'Login',
+                                              style: TextStyle(
+                                                  color: ColorConstant.colorMainPurple,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 20.0
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               )
