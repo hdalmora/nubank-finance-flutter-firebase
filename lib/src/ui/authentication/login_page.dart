@@ -1,5 +1,16 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_finance/src/utils/values/colors.dart';
+
+
+const double minHeight = 60.0;
+const double maxHeight = 550.0;
+const double minWidth = 250.0;
+const double maxWidth = 400.0;
+const double maxBottomButtonsMargin = 15;
+const double minBottomButtonsMargin = -150;
+
 
 class LoginPage extends StatefulWidget {
   static const String routeName = 'login_page';
@@ -8,13 +19,10 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  static const double minHeight = 60.0;
-  static const double maxHeight = 550.0;
-  static const double minWidth = 250.0;
-  static const double maxWidth = 400.0;
+  AnimationController _controller;
 
   bool _loginContainerOpened = false;
   bool _signUpContainerOpened = false;
@@ -33,10 +41,17 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
   }
 
   @override
   void dispose() {
+    _controller.dispose();
+
     super.dispose();
   }
 
@@ -54,6 +69,8 @@ class _LoginPageState extends State<LoginPage> {
       }
       _loginContainerOpened = !_loginContainerOpened;
     });
+
+    _toggleBottomButtons();
   }
 
   void _toggleSignUp() {
@@ -70,7 +87,18 @@ class _LoginPageState extends State<LoginPage> {
       }
       _signUpContainerOpened = !_signUpContainerOpened;
     });
+
+    _toggleBottomButtons();
   }
+
+  void _toggleBottomButtons() {
+    final bool isAnyContainerExpanded = _controller.status == AnimationStatus.completed;
+
+    _controller.fling(velocity: isAnyContainerExpanded ? -2 : 2);
+  }
+
+  double lerp(double min, double max) =>
+      lerpDouble(min, max, _controller.value);
 
   @override
   Widget build(BuildContext context) {
@@ -210,9 +238,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ],
             ),
-            _loginContainerOpened || _signUpContainerOpened
-                ? Container()
-                : Align(
+
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Positioned.fill(
+                  bottom: lerp(maxBottomButtonsMargin, minBottomButtonsMargin),
+                  child: Align(
                     alignment: Alignment.bottomCenter,
                     child: GestureDetector(
                         onTap: () {},
@@ -224,11 +256,14 @@ class _LoginPageState extends State<LoginPage> {
                               padding: EdgeInsets.all(10.0),
                               color: Colors.white,
                               child:
-                                  Image.asset('assets/images/googleicon.png'),
+                              Image.asset('assets/images/googleicon.png'),
                             ),
                           ),
                         )),
                   ),
+                );
+              },
+            ),
           ],
         ));
   }
