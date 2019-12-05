@@ -59,48 +59,41 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     super.dispose();
   }
 
-  void _toggleLogin() {
+  void _toggleAuthButtonsScale(bool isLogin) {
     setState(() {
-      if (_signUpContainerOpened) {
-        _signUpContainerHeight = minHeight;
-        _signUpContainerWidth = minWidth;
-        _signUpContainerOpened = false;
+      if(isLogin) {
+        _loginContainerHeight = _loginContainerHeight == maxHeight ? minHeight : maxHeight;
+        _loginContainerWidth = _loginContainerWidth == maxWidth ? minWidth : maxWidth;
+        _scaleDownSignUpBtn();
+        _loginContainerOpened = !_loginContainerOpened;
+      } else {
+        _signUpContainerHeight = _signUpContainerHeight == maxHeight ? minHeight : maxHeight;
+        _signUpContainerWidth = _signUpContainerWidth == maxWidth ? minWidth : maxWidth;
+        _scaleDownLoginBtn();
+        _signUpContainerOpened = !_signUpContainerOpened;
       }
 
-      _loginContainerHeight =
-          _loginContainerHeight == maxHeight ? minHeight : maxHeight;
-      _loginContainerWidth =
-          _loginContainerWidth == maxWidth ? minWidth : maxWidth;
-
       _formsContainerMargin = _formsContainerMargin == minFormsContainerMargin? maxFormsContainerMargin : minFormsContainerMargin;
-      _loginContainerOpened = !_loginContainerOpened;
-    });
-
-    _toggleBottomButtons();
-
-  }
-
-  void _toggleSignUp() {
-    setState(() {
-      if (_loginContainerOpened) {
-        _loginContainerHeight = minHeight;
-        _loginContainerWidth = minWidth;
-        _loginContainerOpened = false;
-      }
-
-      _signUpContainerHeight =
-          _signUpContainerHeight == maxHeight ? minHeight : maxHeight;
-      _signUpContainerWidth =
-          _signUpContainerWidth == maxWidth ? minWidth : maxWidth;
-
-      _formsContainerMargin = _formsContainerMargin == minFormsContainerMargin? maxFormsContainerMargin : minFormsContainerMargin;
-      _signUpContainerOpened = !_signUpContainerOpened;
-
-      _toggleBottomButtons();
     });
   }
 
-  void _toggleBottomButtons() {
+  void _scaleDownSignUpBtn() {
+    if (_signUpContainerOpened) {
+      _signUpContainerHeight = minHeight;
+      _signUpContainerWidth = minWidth;
+      _signUpContainerOpened = false;
+    }
+  }
+
+  void _scaleDownLoginBtn() {
+    if (_loginContainerOpened) {
+      _loginContainerHeight = minHeight;
+      _loginContainerWidth = minWidth;
+      _loginContainerOpened = false;
+    }
+  }
+
+  void _toggleNuLogoAndGoogleBtn() {
     final bool isAnyContainerExpanded = _controller.status == AnimationStatus.completed;
 
     _controller.fling(velocity: isAnyContainerExpanded ? -2 : 2);
@@ -163,7 +156,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         : GestureDetector(
                           onTap: () {
                             if (!_signUpContainerOpened && !_loginContainerOpened) {
-                              _toggleSignUp();
+                              _toggleAuthButtonsScale(false);
+                              _toggleNuLogoAndGoogleBtn();
                             }
                           },
                           child: AnimatedContainer(
@@ -191,7 +185,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       child: GestureDetector(
                                         onTap: () {
                                           if (_signUpContainerOpened) {
-                                            _toggleSignUp();
+                                            _toggleAuthButtonsScale(false);
+                                            _toggleNuLogoAndGoogleBtn();
                                           }
                                         },
                                         child: Icon(
@@ -344,7 +339,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         :                       GestureDetector(
                           onTap: () {
                             if (!_loginContainerOpened && !_signUpContainerOpened) {
-                              _toggleLogin();
+                              _toggleAuthButtonsScale(true);
+                              _toggleNuLogoAndGoogleBtn();
                             }
                           },
                           child: AnimatedContainer(
@@ -372,7 +368,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       child: GestureDetector(
                                         onTap: () {
                                           if (_loginContainerOpened) {
-                                            _toggleLogin();
+                                            _toggleAuthButtonsScale(true);
+                                            _toggleNuLogoAndGoogleBtn();
                                           }
                                         },
                                         child: Icon(
