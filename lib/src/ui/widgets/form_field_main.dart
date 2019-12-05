@@ -32,6 +32,7 @@ class FormFieldMain extends StatelessWidget {
         key: key,
         onChanged: onChanged,
         keyboardType: textInputType,
+        obscureText: obscured,
         decoration: InputDecoration(
           errorText: errorText,
           filled: true,

@@ -252,7 +252,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                             ),
 
                                             StreamBuilder(
-                                              stream: _authBloc.password,
+                                              stream: _authBloc.displayName,
                                               builder: (context, snapshot) {
                                                 return FormFieldMain(
                                                   onChanged: _authBloc.changeDisplayName,
@@ -282,7 +282,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                             if(!snapshot.hasData || snapshot.hasError || !snapshot.data) {
                                               return ButtonTransparentMain(
                                                 callback: () async {
-                                                  if(_authBloc.validateAll()) {
+                                                  if(_authBloc.validateEmailAndPassword() && _authBloc.validateDisplayName()) {
                                                     int response = await _authBloc.registerUser();
 
                                                     if (response < 0) {
@@ -290,6 +290,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                                     } else {
                                                       // TODO: send email confirmation
                                                     }
+                                                  } else {
+                                                    showErrorMessage(StringConstants.fillUpFormCorrectly);
                                                   }
                                                 },
                                                 height: 60.0,
@@ -301,7 +303,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                               );
                                             } else {
                                               return CircularProgressIndicator(
-                                                backgroundColor: ColorConstant.colorMainPurple,
+                                                backgroundColor: Colors.white,
                                               );
                                             }
                                           }
@@ -381,7 +383,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                           children: <Widget>[
 
                                             StreamBuilder(
-                                              stream: _authBloc.password,
+                                              stream: _authBloc.email,
                                               builder: (context, snapshot) {
                                                 return FormFieldMain(
                                                   onChanged: _authBloc.changeEmail,
@@ -420,23 +422,36 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       bottom: 15,
                                       child: Align(
                                         alignment: Alignment.bottomCenter,
-                                        child: ButtonTransparentMain(
-                                          callback: () async {
-                                            if(_authBloc.validateEmailAndPassword()) {
-                                              int response = await _authBloc.loginUser();
+                                        child: StreamBuilder(
+                                        stream: _authBloc.signInStatus,
+                                        builder: (context, snapshot) {
+                                          if(!snapshot.hasData || snapshot.hasError || !snapshot.data) {
+                                            return ButtonTransparentMain(
+                                              callback: () async {
+                                                if (_authBloc.validateEmailAndPassword()) {
+                                                  int response = await _authBloc.loginUser();
 
-                                              if (response < 0) {
-                                                showErrorMessage(StringConstants.emailOrPasswordIncorrect);
-                                              }
-                                            }
-                                          },
-                                          height: 60.0,
-                                          width: MediaQuery.of(context).size.width,
-                                          fontSize: 20.0,
-                                          marginRight: 30.0,
-                                          marginLeft: 30.0,
-                                          text: 'Login',
-                                        ),
+                                                  if (response < 0) {
+                                                    showErrorMessage(
+                                                        StringConstants.emailOrPasswordIncorrect);
+                                                  }
+                                                } else {
+                                                  showErrorMessage(StringConstants.fillUpFormCorrectly);
+                                                }
+                                              },
+                                              height: 60.0,
+                                              width: MediaQuery.of(context).size.width,
+                                              fontSize: 20.0,
+                                              marginRight: 30.0,
+                                              marginLeft: 30.0,
+                                              text: 'Login',
+                                            );
+                                          } else {
+                                            return CircularProgressIndicator(
+                                              backgroundColor: Colors.white,
+                                            );
+                                          }
+                                        }),
                                       ),
                                     ),
                                   ],

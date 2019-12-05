@@ -52,22 +52,21 @@ class AuthenticationBloc implements Bloc {
   });
 
   bool validateEmailAndPassword() {
-    return
+    if(
       _email.value != null &&
       _email.value.isNotEmpty &&
       _email.value.contains("@") &&
       _password.value != null &&
       _password.value.isNotEmpty &&
       _email.value.contains('@') &&
-      _password.value.length > 5;
+      _password.value.length > 5) {
+      return true;
+    }
+    return false;
   }
 
   bool validateDisplayName() {
     return _displayName.value != null && _displayName.value.isNotEmpty;
-  }
-
-  bool validateAll() {
-    return validateEmailAndPassword() && validateAll();
   }
 
   // Firebase methods
