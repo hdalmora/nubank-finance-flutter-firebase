@@ -1,9 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_finance/src/blocs/authentication/authentication_bloc.dart';
+import 'package:flutter_finance/src/blocs/authentication/authentication_bloc_provider.dart';
 import 'package:flutter_finance/src/ui/widgets/button_transparent_main.dart';
 import 'package:flutter_finance/src/utils/values/colors.dart';
 import 'package:flutter_finance/src/ui/widgets/form_field_main.dart';
+import 'package:flutter_finance/src/utils/values/string_constants.dart';
 
 
 const double minHeight = 60.0;
@@ -26,6 +29,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  AuthenticationBloc _authBloc;
+
   AnimationController _controller;
 
   bool _loginContainerOpened = false;
@@ -41,6 +46,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   void didChangeDependencies() {
+    _authBloc = AuthenticationBlocProvider.of(context);
     super.didChangeDependencies();
   }
 
@@ -56,8 +62,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   void dispose() {
+    _authBloc.dispose();
     _controller.dispose();
-
     super.dispose();
   }
 
@@ -100,6 +106,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
     _controller.fling(velocity: isAnyContainerExpanded ? -2 : 2);
   }
+
+  void showErrorMessage(String message) {
+    final snackbar = SnackBar(content: Text(message), duration: new Duration(seconds: 2));
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+  }
+
 
   double lerp(double min, double max) =>
       lerpDouble(min, max, _controller.value);
@@ -207,31 +219,52 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                         child: Column(
                                           children: <Widget>[
 
-                                            const FormFieldMain(
-                                              hintText: 'Email...',
-                                              marginLeft: 20.0,
-                                              marginRight: 20.0,
-                                              marginTop: 0,
-                                              textInputType: TextInputType.text,
-                                              obscured: false,
+                                            StreamBuilder(
+                                              stream: _authBloc.email,
+                                              builder: (context, snapshot) {
+                                                return FormFieldMain(
+                                                  hintText: 'Email...',
+                                                  onChanged: _authBloc.changeEmail,
+                                                  errorText: snapshot.error,
+                                                  marginLeft: 20.0,
+                                                  marginRight: 20.0,
+                                                  marginTop: 0,
+                                                  textInputType: TextInputType.text,
+                                                  obscured: false,
+                                                );
+                                              },
                                             ),
 
-                                            const FormFieldMain(
-                                              hintText: 'Password...',
-                                              marginLeft: 20.0,
-                                              marginRight: 20.0,
-                                              marginTop: 15.0,
-                                              textInputType: TextInputType.text,
-                                              obscured: true,
+                                            StreamBuilder(
+                                              stream: _authBloc.password,
+                                              builder: (context, snapshot) {
+                                                return FormFieldMain(
+                                                  onChanged: _authBloc.changePassword,
+                                                  errorText: snapshot.error,
+                                                  hintText: 'Password...',
+                                                  marginLeft: 20.0,
+                                                  marginRight: 20.0,
+                                                  marginTop: 15.0,
+                                                  textInputType: TextInputType.text,
+                                                  obscured: true,
+                                                );
+                                              },
                                             ),
 
-                                            const FormFieldMain(
-                                              hintText: 'Display Name...',
-                                              marginLeft: 20.0,
-                                              marginRight: 20.0,
-                                              marginTop: 15.0,
-                                              textInputType: TextInputType.text,
-                                              obscured: false,
+                                            StreamBuilder(
+                                              stream: _authBloc.password,
+                                              builder: (context, snapshot) {
+                                                return FormFieldMain(
+                                                  onChanged: _authBloc.changeDisplayName,
+                                                  errorText: snapshot.error,
+                                                  hintText: 'Display Name...',
+                                                  marginLeft: 20.0,
+                                                  marginRight: 20.0,
+                                                  marginTop: 15.0,
+                                                  textInputType: TextInputType.text,
+                                                  obscured: false,
+                                                );
+                                              },
                                             ),
                                           ],
                                         ),
@@ -242,16 +275,36 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       bottom: 15,
                                       child: Align(
                                         alignment: Alignment.bottomCenter,
-                                        child: ButtonTransparentMain(
-                                          callback: () {
+                                        child:
+                                        StreamBuilder(
+                                          stream: _authBloc.signInStatus,
+                                          builder: (context, snapshot) {
+                                            if(!snapshot.hasData || snapshot.hasError || !snapshot.data) {
+                                              return ButtonTransparentMain(
+                                                callback: () async {
+                                                  if(_authBloc.validateAll()) {
+                                                    int response = await _authBloc.registerUser();
 
-                                          },
-                                          height: 60.0,
-                                          width: MediaQuery.of(context).size.width,
-                                          fontSize: 20.0,
-                                          marginRight: 30.0,
-                                          marginLeft: 30.0,
-                                          text: 'Sign Up',
+                                                    if (response < 0) {
+                                                      showErrorMessage(StringConstants.emailOrPasswordIncorrect);
+                                                    } else {
+                                                      // TODO: send email confirmation
+                                                    }
+                                                  }
+                                                },
+                                                height: 60.0,
+                                                width: MediaQuery.of(context).size.width,
+                                                fontSize: 20.0,
+                                                marginRight: 30.0,
+                                                marginLeft: 30.0,
+                                                text: 'Sign Up',
+                                              );
+                                            } else {
+                                              return CircularProgressIndicator(
+                                                backgroundColor: ColorConstant.colorMainPurple,
+                                              );
+                                            }
+                                          }
                                         ),
                                       ),
                                     ),
@@ -327,24 +380,37 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                         child: Column(
                                           children: <Widget>[
 
-                                            const FormFieldMain(
-                                              hintText: 'Email...',
-                                              marginLeft: 20.0,
-                                              marginRight: 20.0,
-                                              marginTop: 0,
-                                              textInputType: TextInputType.text,
-                                              obscured: false,
+                                            StreamBuilder(
+                                              stream: _authBloc.password,
+                                              builder: (context, snapshot) {
+                                                return FormFieldMain(
+                                                  onChanged: _authBloc.changeEmail,
+                                                  errorText: snapshot.error,
+                                                  hintText: 'Email...',
+                                                  marginLeft: 20.0,
+                                                  marginRight: 20.0,
+                                                  marginTop: 0,
+                                                  textInputType: TextInputType.text,
+                                                  obscured: false,
+                                                );
+                                              },
                                             ),
 
-                                            const FormFieldMain(
-                                              hintText: 'Password...',
-                                              marginLeft: 20.0,
-                                              marginRight: 20.0,
-                                              marginTop: 15.0,
-                                              textInputType: TextInputType.text,
-                                              obscured: true,
+                                            StreamBuilder(
+                                              stream: _authBloc.password,
+                                              builder: (context, snapshot) {
+                                                return FormFieldMain(
+                                                  onChanged: _authBloc.changePassword,
+                                                  errorText: snapshot.error,
+                                                  hintText: 'Password...',
+                                                  marginLeft: 20.0,
+                                                  marginRight: 20.0,
+                                                  marginTop: 15.0,
+                                                  textInputType: TextInputType.text,
+                                                  obscured: true,
+                                                );
+                                              },
                                             ),
-
                                           ],
                                         ),
                                       ),
@@ -355,8 +421,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       child: Align(
                                         alignment: Alignment.bottomCenter,
                                         child: ButtonTransparentMain(
-                                          callback: () {
+                                          callback: () async {
+                                            if(_authBloc.validateEmailAndPassword()) {
+                                              int response = await _authBloc.loginUser();
 
+                                              if (response < 0) {
+                                                showErrorMessage(StringConstants.emailOrPasswordIncorrect);
+                                              }
+                                            }
                                           },
                                           height: 60.0,
                                           width: MediaQuery.of(context).size.width,
