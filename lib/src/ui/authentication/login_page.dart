@@ -1,7 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_finance/src/ui/widgets/button_transparent_main.dart';
 import 'package:flutter_finance/src/utils/values/colors.dart';
+import 'package:flutter_finance/src/ui/widgets/form_field_main.dart';
 
 
 const double minHeight = 60.0;
@@ -150,6 +152,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
+
+                      /// Sign Up Button Animated ------
                       AnimatedSwitcher(
                         duration: Duration(milliseconds: 200),
                         child: _loginContainerOpened ? Container()
@@ -202,84 +206,32 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                         alignment: Alignment.center,
                                         child: Column(
                                           children: <Widget>[
-                                            Container(
-                                              margin: EdgeInsets.only(left: 20.0, right: 20.0),
-                                              child: TextField(
-                                                keyboardType: TextInputType.text,
-                                                decoration: InputDecoration(
-                                                  filled: true,
-                                                  enabledBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          width: 1,
-                                                          color: Color(0xCC000000)
-                                                      ),
-                                                      borderRadius: BorderRadius.all(Radius.circular(0))
-                                                  ),
-                                                  fillColor: Colors.white,
-                                                  hintText: 'Email...',
-                                                  labelStyle: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.grey
-                                                  ),
-                                                  focusedBorder: UnderlineInputBorder(
-                                                    borderSide: BorderSide(color: ColorConstant.colorMainPurple),
-                                                  ),
-                                                ),
-                                              ),
+
+                                            const FormFieldMain(
+                                              hintText: 'Email...',
+                                              marginLeft: 20.0,
+                                              marginRight: 20.0,
+                                              marginTop: 0,
+                                              textInputType: TextInputType.text,
+                                              obscured: false,
                                             ),
 
-
-                                            Container(
-                                              margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0),
-                                              child: TextField(
-                                                keyboardType: TextInputType.text,
-                                                obscureText: true,
-                                                decoration: InputDecoration(
-                                                  filled: true,
-                                                  enabledBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          width: 1,
-                                                          color: Color(0xCC000000)
-                                                      ),
-                                                      borderRadius: BorderRadius.all(Radius.circular(0))
-                                                  ),
-                                                  fillColor: Colors.white,
-                                                  hintText: 'Password...',
-                                                  labelStyle: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.grey
-                                                  ),
-                                                  focusedBorder: UnderlineInputBorder(
-                                                    borderSide: BorderSide(color: ColorConstant.colorMainPurple),
-                                                  ),
-                                                ),
-                                              ),
+                                            const FormFieldMain(
+                                              hintText: 'Password...',
+                                              marginLeft: 20.0,
+                                              marginRight: 20.0,
+                                              marginTop: 15.0,
+                                              textInputType: TextInputType.text,
+                                              obscured: true,
                                             ),
 
-                                            Container(
-                                              margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0),
-                                              child: TextField(
-                                                keyboardType: TextInputType.text,
-                                                decoration: InputDecoration(
-                                                  filled: true,
-                                                  enabledBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          width: 1,
-                                                          color: Color(0xCC000000)
-                                                      ),
-                                                      borderRadius: BorderRadius.all(Radius.circular(0))
-                                                  ),
-                                                  fillColor: Colors.white,
-                                                  hintText: 'Display Name...',
-                                                  labelStyle: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.grey
-                                                  ),
-                                                  focusedBorder: UnderlineInputBorder(
-                                                    borderSide: BorderSide(color: ColorConstant.colorMainPurple),
-                                                  ),
-                                                ),
-                                              ),
+                                            const FormFieldMain(
+                                              hintText: 'Display Name...',
+                                              marginLeft: 20.0,
+                                              marginRight: 20.0,
+                                              marginTop: 15.0,
+                                              textInputType: TextInputType.text,
+                                              obscured: false,
                                             ),
                                           ],
                                         ),
@@ -290,38 +242,22 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       bottom: 15,
                                       child: Align(
                                         alignment: Alignment.bottomCenter,
-                                        child: GestureDetector(
-                                          onTap: () {
+                                        child: ButtonTransparentMain(
+                                          callback: () {
 
                                           },
-                                          child: Container(
-                                            margin: EdgeInsets.only(left: 30.0, right: 30.0),
-                                            alignment: Alignment.center,
-                                            height: 60.0,
-                                            width: MediaQuery.of(context).size.width,
-                                            decoration: BoxDecoration(
-                                                color: Colors.transparent,
-                                                border: Border.all(
-                                                    width: 1,
-                                                    color: ColorConstant.colorMainPurple
-                                                )
-                                            ),
-                                            child: Text(
-                                              'Sign Up',
-                                              style: TextStyle(
-                                                  color: ColorConstant.colorMainPurple,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 20.0
-                                              ),
-                                            ),
-                                          ),
+                                          height: 60.0,
+                                          width: MediaQuery.of(context).size.width,
+                                          fontSize: 20.0,
+                                          marginRight: 30.0,
+                                          marginLeft: 30.0,
+                                          text: 'Sign Up',
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              )
-                                  : Text(
+                              ) : Text(
                                 'Sign Up',
                                 style: TextStyle(
                                     color: Colors.black54,
@@ -332,11 +268,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           ),
                         ),
                       ),
+                      /// End Sign Up Button Animated ------
 
+                      /// Login Button Animated ------
                       AnimatedSwitcher(
                         duration: Duration(milliseconds: 200),
                         child: _signUpContainerOpened ? Container()
-                        :                       GestureDetector(
+                        : GestureDetector(
                           onTap: () {
                             if (!_loginContainerOpened && !_signUpContainerOpened) {
                               _toggleAuthButtonsScale(true);
@@ -362,6 +300,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 alignment: Alignment.topCenter,
                                 child: Stack(
                                   children: <Widget>[
+
+                                    /// Close button ------
                                     Positioned(
                                       top: 5,
                                       left: 5,
@@ -378,7 +318,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                         ),
                                       ),
                                     ),
-
+                                    /// End Close Button ------
 
                                     Positioned.fill(
                                       top: 70.0,
@@ -386,102 +326,50 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                         alignment: Alignment.center,
                                         child: Column(
                                           children: <Widget>[
-                                            Container(
-                                              margin: EdgeInsets.only(left: 20.0, right: 20.0),
-                                              child: TextField(
-                                                keyboardType: TextInputType.text,
-                                                decoration: InputDecoration(
-                                                  filled: true,
-                                                  enabledBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          width: 1,
-                                                          color: Color(0xCC000000)
-                                                      ),
-                                                      borderRadius: BorderRadius.all(Radius.circular(0))
-                                                  ),
-                                                  fillColor: Colors.white,
-                                                  hintText: 'Email...',
-                                                  labelStyle: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.grey
-                                                  ),
-                                                  focusedBorder: UnderlineInputBorder(
-                                                    borderSide: BorderSide(color: ColorConstant.colorMainPurple),
-                                                  ),
-                                                ),
-                                              ),
+
+                                            const FormFieldMain(
+                                              hintText: 'Email...',
+                                              marginLeft: 20.0,
+                                              marginRight: 20.0,
+                                              marginTop: 0,
+                                              textInputType: TextInputType.text,
+                                              obscured: false,
                                             ),
 
-
-                                            Container(
-                                              margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0),
-                                              child: TextField(
-                                                keyboardType: TextInputType.text,
-                                                obscureText: true,
-                                                decoration: InputDecoration(
-                                                  filled: true,
-                                                  enabledBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          width: 1,
-                                                          color: Color(0xCC000000)
-                                                      ),
-                                                      borderRadius: BorderRadius.all(Radius.circular(0))
-                                                  ),
-                                                  fillColor: Colors.white,
-                                                  hintText: 'Password...',
-                                                  labelStyle: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.grey
-                                                  ),
-                                                  focusedBorder: UnderlineInputBorder(
-                                                    borderSide: BorderSide(color: ColorConstant.colorMainPurple),
-                                                  ),
-                                                ),
-                                              ),
+                                            const FormFieldMain(
+                                              hintText: 'Password...',
+                                              marginLeft: 20.0,
+                                              marginRight: 20.0,
+                                              marginTop: 15.0,
+                                              textInputType: TextInputType.text,
+                                              obscured: true,
                                             ),
+
                                           ],
                                         ),
                                       ),
                                     ),
 
-
-
                                     Positioned.fill(
                                       bottom: 15,
                                       child: Align(
                                         alignment: Alignment.bottomCenter,
-                                        child: GestureDetector(
-                                          onTap: () {
+                                        child: ButtonTransparentMain(
+                                          callback: () {
 
                                           },
-                                          child: Container(
-                                            margin: EdgeInsets.only(left: 30.0, right: 30.0),
-                                            alignment: Alignment.center,
-                                            height: 60.0,
-                                            width: MediaQuery.of(context).size.width,
-                                            decoration: BoxDecoration(
-                                                color: Colors.transparent,
-                                                border: Border.all(
-                                                    width: 1,
-                                                    color: ColorConstant.colorMainPurple
-                                                )
-                                            ),
-                                            child: Text(
-                                              'Login',
-                                              style: TextStyle(
-                                                  color: ColorConstant.colorMainPurple,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 20.0
-                                              ),
-                                            ),
-                                          ),
+                                          height: 60.0,
+                                          width: MediaQuery.of(context).size.width,
+                                          fontSize: 20.0,
+                                          marginRight: 30.0,
+                                          marginLeft: 30.0,
+                                          text: 'Login',
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              )
-                                  : Text(
+                              ) : Text(
                                 'Login',
                                 style: TextStyle(
                                     color: Colors.black54,
@@ -492,12 +380,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           ),
                         ),
                       ),
+                      /// End Login Button Animated -------
                     ],
                   ),
                 ),
               ],
             ),
 
+            /// Google Login Button -------
             AnimatedBuilder(
               animation: _controller,
               builder: (context, child) {
@@ -523,6 +413,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 );
               },
             ),
+            /// End Google Login Button -------
           ],
         ));
   }
