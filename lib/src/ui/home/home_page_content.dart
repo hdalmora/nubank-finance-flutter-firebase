@@ -3,8 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_finance/src/ui/widgets/bottom_action_button.dart';
 
-const double minTop = 200;
-const double maxQuickActionsMargin = 80;
+const double minTop = 145;
+const double maxQuickActionsMargin = 50;
 const double minQuickActionsMargin = -170;
 
 class HomePageContent extends StatefulWidget {
@@ -87,7 +87,7 @@ class _HomePageContentState extends State<HomePageContent>
             ),
 
             Positioned(
-              height: MediaQuery.of(context).size.height*.17,
+              height: 145,
               left: 0,
               right: 0,
               bottom: lerp(maxQuickActionsMargin, minQuickActionsMargin),
