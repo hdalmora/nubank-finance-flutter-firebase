@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_finance/src/ui/widgets/bottom_action_button.dart';
+import 'package:flutter_finance/src/ui/widgets/options_buttons.dart';
 
 const double minTop = 145;
 const double maxQuickActionsMargin = 50;
@@ -13,8 +14,7 @@ class HomePageContent extends StatefulWidget {
 }
 
 class _HomePageContentState extends State<HomePageContent>
-  with SingleTickerProviderStateMixin {
-
+    with SingleTickerProviderStateMixin {
   AnimationController _controller;
 
   @override
@@ -39,16 +39,17 @@ class _HomePageContentState extends State<HomePageContent>
   }
 
   void _handleDragEnd(DragEndDetails details) {
-    if (_controller.isAnimating || _controller.status == AnimationStatus.completed)
-      return;
+    if (_controller.isAnimating ||
+        _controller.status == AnimationStatus.completed) return;
 
-    final double flingVelocity = details.velocity.pixelsPerSecond.dy / MediaQuery.of(context).size.height*.8;
+    final double flingVelocity = details.velocity.pixelsPerSecond.dy /
+        MediaQuery.of(context).size.height *
+        .8;
 
-    if(flingVelocity < 0.0)
-      _controller.fling(velocity:  math.min(-2, -flingVelocity));
+    if (flingVelocity < 0.0)
+      _controller.fling(velocity: math.min(-2, -flingVelocity));
     else
-      _controller.fling(velocity:  math.max(2, -flingVelocity));
-
+      _controller.fling(velocity: math.max(2, -flingVelocity));
   }
 
   double lerp(double min, double max) =>
@@ -56,8 +57,7 @@ class _HomePageContentState extends State<HomePageContent>
 
   @override
   Widget build(BuildContext context) {
-
-    double maxTop = MediaQuery.of(context).size.height*.8;
+    double maxTop = MediaQuery.of(context).size.height * .8;
 
     return AnimatedBuilder(
       animation: _controller,
@@ -65,27 +65,81 @@ class _HomePageContentState extends State<HomePageContent>
         return Stack(
           children: <Widget>[
             Positioned(
-              height: MediaQuery.of(context).size.height*.45,
+              height: MediaQuery.of(context).size.height * .45,
+              left: 0,
+              right: 0,
+              top: minTop,
+              child: Padding(
+                padding: const EdgeInsets.all(35.0),
+                child: Column(
+                  children: <Widget>[
+                    Divider(
+                      color: Colors.white70,
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    OptionsButton(
+                      icon: Icons.help_outline,
+                      text: "Sobre o App",
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Divider(
+                      color: Colors.white70,
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    OptionsButton(
+                      icon: Icons.perm_identity,
+                      text: "Meu Perfil",
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Divider(
+                      color: Colors.white70,
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    OptionsButton(
+                      icon: Icons.settings,
+                      text: "Configurações do App",
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Divider(
+                      color: Colors.white70,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              height: MediaQuery.of(context).size.height * .45,
               left: 0,
               right: 0,
               top: lerp(minTop, maxTop),
               child: GestureDetector(
                 onVerticalDragUpdate: _handleDragUpdate,
                 onVerticalDragEnd: _handleDragEnd,
-                onTap: () {
-                },
+                onTap: () {},
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   margin: const EdgeInsets.only(left: 15.0, right: 15.0),
                   decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(8), bottom: Radius.circular(8)),
+                    borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(8), bottom: Radius.circular(8)),
                   ),
                   child: Container(), //TODO: Home Finance card content
                 ),
               ),
             ),
-
             Positioned(
               height: 145,
               left: 0,
