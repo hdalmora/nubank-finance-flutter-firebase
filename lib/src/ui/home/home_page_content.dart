@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_finance/src/ui/widgets/bottom_action_button.dart';
 
-import '../../utils/values/colors.dart';
-
 const double minTop = 200;
+const double maxQuickActionsMargin = 80;
+const double minQuickActionsMargin = -170;
 
 class HomePageContent extends StatefulWidget {
   @override
@@ -48,6 +48,7 @@ class _HomePageContentState extends State<HomePageContent>
       _controller.fling(velocity:  math.min(-2, -flingVelocity));
     else
       _controller.fling(velocity:  math.max(2, -flingVelocity));
+
   }
 
   double lerp(double min, double max) =>
@@ -89,7 +90,7 @@ class _HomePageContentState extends State<HomePageContent>
               height: MediaQuery.of(context).size.height*.17,
               left: 0,
               right: 0,
-              bottom: 80,
+              bottom: lerp(maxQuickActionsMargin, minQuickActionsMargin),
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
