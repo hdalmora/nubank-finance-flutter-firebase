@@ -69,6 +69,7 @@ class _HomePageContentState extends State<HomePageContent>
             onTap: () {
             },
             child: Container(
+              width: MediaQuery.of(context).size.width*.90,
               padding: const EdgeInsets.symmetric(horizontal: 32),
               margin: const EdgeInsets.only(left: 15.0, right: 15.0),
               decoration: const BoxDecoration(
