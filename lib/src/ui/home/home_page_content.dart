@@ -6,6 +6,7 @@ import 'package:flutter_finance/src/blocs/user_finance/user_finance_bloc_provide
 import 'package:flutter_finance/src/ui/widgets/bottom_action_button.dart';
 import 'package:flutter_finance/src/ui/widgets/options_buttons.dart';
 import '../widgets/button_transparent_main.dart';
+import 'finance_history_page.dart';
 
 const double minTop = 145;
 const double maxQuickActionsMargin = 50;
@@ -50,18 +51,20 @@ class _HomePageContentState extends State<HomePageContent>
   void _handleDragUpdate(DragUpdateDetails details) {
     _controller.value += details.primaryDelta / minTop;
     print("VALUE: ${_controller.value}");
+
+    if(_controller.value > .5)
+      _hideOptions = false;
+    else
+      _hideOptions = true;
   }
 
   void _handleDragEnd(DragEndDetails details) {
     if (_controller.isAnimating || _controller.status == AnimationStatus.completed) return;
 
-    if (_controller.value > 0.5) {
+    if (_controller.value > 0.5)
       _controller.fling(velocity: 2);
-      _hideOptions = false;
-    } else {
-    _controller.fling(velocity: -2);
-    _hideOptions = true;
-    }
+    else
+      _controller.fling(velocity: -2);
 
   }
 
@@ -157,7 +160,10 @@ class _HomePageContentState extends State<HomePageContent>
               child: GestureDetector(
                 onVerticalDragUpdate: _handleDragUpdate,
                 onVerticalDragEnd: _handleDragEnd,
-                onTap: () {},
+                onTap: () {
+                  if(_hideOptions)
+                    Navigator.pushNamed(context, FinanceHistoryPage.routeName);
+                },
                 child: Container(
                   margin: const EdgeInsets.only(left: 15.0, right: 15.0),
                   decoration: const BoxDecoration(
