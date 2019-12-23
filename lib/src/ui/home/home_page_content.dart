@@ -22,6 +22,8 @@ class _HomePageContentState extends State<HomePageContent>
 
   UserFinanceBloc _userFianceBloc;
 
+  bool _hideOptions = true;
+
   @override
   void didChangeDependencies() {
     _userFianceBloc = UserFinanceBlocProvider.of(context);
@@ -47,24 +49,23 @@ class _HomePageContentState extends State<HomePageContent>
 
   void _handleDragUpdate(DragUpdateDetails details) {
     _controller.value += details.primaryDelta / minTop;
+    print("VALUE: ${_controller.value}");
   }
 
   void _handleDragEnd(DragEndDetails details) {
-    if (_controller.isAnimating ||
-        _controller.status == AnimationStatus.completed) return;
+    if (_controller.isAnimating || _controller.status == AnimationStatus.completed) return;
 
-    final double flingVelocity = details.velocity.pixelsPerSecond.dy /
-        MediaQuery.of(context).size.height *
-        .8;
+    if (_controller.value > 0.5) {
+      _controller.fling(velocity: 2);
+      _hideOptions = false;
+    } else {
+    _controller.fling(velocity: -2);
+    _hideOptions = true;
+    }
 
-    if (flingVelocity < 0.0)
-      _controller.fling(velocity: math.min(-2, -flingVelocity));
-    else
-      _controller.fling(velocity: math.max(2, -flingVelocity));
   }
 
-  double lerp(double min, double max) =>
-      lerpDouble(min, max, _controller.value);
+  double lerp(double min, double max) => lerpDouble(min, max, _controller.value);
 
   @override
   Widget build(BuildContext context) {
@@ -80,69 +81,72 @@ class _HomePageContentState extends State<HomePageContent>
               left: 0,
               right: 0,
               top: minTop,
-              child: Padding(
-                padding: const EdgeInsets.all(35.0),
-                child: Column(
-                  children: <Widget>[
-                    Divider(
-                      color: Colors.white70,
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    OptionsButton(
-                      icon: Icons.help_outline,
-                      text: "Sobre o App",
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Divider(
-                      color: Colors.white70,
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    OptionsButton(
-                      icon: Icons.perm_identity,
-                      text: "Meu Perfil",
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Divider(
-                      color: Colors.white70,
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    OptionsButton(
-                      icon: Icons.settings,
-                      text: "Configurações do App",
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Divider(
-                      color: Colors.white70,
-                    ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                child: _hideOptions == false ? Padding(
+                  padding: const EdgeInsets.all(35.0),
+                  child: Column(
+                    children: <Widget>[
+                      Divider(
+                        color: Colors.white70,
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      OptionsButton(
+                        icon: Icons.help_outline,
+                        text: "Sobre o App",
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Divider(
+                        color: Colors.white70,
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      OptionsButton(
+                        icon: Icons.perm_identity,
+                        text: "Meu Perfil",
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Divider(
+                        color: Colors.white70,
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      OptionsButton(
+                        icon: Icons.settings,
+                        text: "Configurações do App",
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Divider(
+                        color: Colors.white70,
+                      ),
 
-                    SizedBox(height: 25,),
+                      SizedBox(height: 25,),
 
-                    ButtonTransparentMain(
-                      callback: () {
-                        _userFianceBloc.signOut();
-                      },
-                      fontSize: 20.0,
-                      height: 50,
-                      marginLeft: 0,
-                      marginRight: 0,
-                      text: "SAIR DA CONTA",
-                      borderColor: Colors.white70,
-                      textColor: Colors.white70,
-                    )
-                  ],
-                ),
+                      ButtonTransparentMain(
+                        callback: () {
+                          _userFianceBloc.signOut();
+                        },
+                        fontSize: 20.0,
+                        height: 50,
+                        marginLeft: 0,
+                        marginRight: 0,
+                        text: "SAIR DA CONTA",
+                        borderColor: Colors.white70,
+                        textColor: Colors.white70,
+                      )
+                    ],
+                  ),
+                ) : Container(),
               ),
             ),
             Positioned(
