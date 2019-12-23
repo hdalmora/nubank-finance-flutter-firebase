@@ -1,8 +1,11 @@
 import 'dart:ui';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_finance/src/blocs/user_finance/user_finance_bloc.dart';
+import 'package:flutter_finance/src/blocs/user_finance/user_finance_bloc_provider.dart';
 import 'package:flutter_finance/src/ui/widgets/bottom_action_button.dart';
 import 'package:flutter_finance/src/ui/widgets/options_buttons.dart';
+import '../widgets/button_transparent_main.dart';
 
 const double minTop = 145;
 const double maxQuickActionsMargin = 50;
@@ -16,6 +19,14 @@ class HomePageContent extends StatefulWidget {
 class _HomePageContentState extends State<HomePageContent>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
+
+  UserFinanceBloc _userFianceBloc;
+
+  @override
+  void didChangeDependencies() {
+    _userFianceBloc = UserFinanceBlocProvider.of(context);
+    super.didChangeDependencies();
+  }
 
   @override
   void initState() {
@@ -57,7 +68,7 @@ class _HomePageContentState extends State<HomePageContent>
 
   @override
   Widget build(BuildContext context) {
-    double maxTop = MediaQuery.of(context).size.height * .8;
+    double maxTop = MediaQuery.of(context).size.height * .9;
 
     return AnimatedBuilder(
       animation: _controller,
@@ -65,7 +76,7 @@ class _HomePageContentState extends State<HomePageContent>
         return Stack(
           children: <Widget>[
             Positioned(
-              height: MediaQuery.of(context).size.height * .45,
+              height: MediaQuery.of(context).size.height * .60,
               left: 0,
               right: 0,
               top: minTop,
@@ -115,6 +126,21 @@ class _HomePageContentState extends State<HomePageContent>
                     Divider(
                       color: Colors.white70,
                     ),
+
+                    SizedBox(height: 25,),
+
+                    ButtonTransparentMain(
+                      callback: () {
+                        _userFianceBloc.signOut();
+                      },
+                      fontSize: 20.0,
+                      height: 50,
+                      marginLeft: 0,
+                      marginRight: 0,
+                      text: "SAIR DA CONTA",
+                      borderColor: Colors.white70,
+                      textColor: Colors.white70,
+                    )
                   ],
                 ),
               ),
@@ -129,14 +155,125 @@ class _HomePageContentState extends State<HomePageContent>
                 onVerticalDragEnd: _handleDragEnd,
                 onTap: () {},
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
                   margin: const EdgeInsets.only(left: 15.0, right: 15.0),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.vertical(
                         top: Radius.circular(8), bottom: Radius.circular(8)),
                   ),
-                  child: Container(), //TODO: Home Finance card content
+                  child: Stack(
+                    children: <Widget>[
+                      Positioned(
+                        top: 16,
+                        left: 16,
+                        child: Icon(
+                          Icons.credit_card,
+                          color: Colors.black38,
+                          size: 32.0,
+                        ),
+                      ),
+
+                      Positioned(
+                        top: MediaQuery.of(context).size.height*.14,
+                        left: 16,
+                        child: Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "GASTO ATUAL",
+                                style: TextStyle(
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15.0
+                                ),
+                              ),
+                              Text(
+                                "R\$ 1500.00",
+                                style: TextStyle(
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 30.0
+                                ),
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    "Limite disponível ",
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15.0
+                                    ),
+                                  ),
+                                  Text(
+                                    " R\$ 2545.00",
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15.0
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      Positioned(
+                        right: 25,
+                        top: 20,
+                        child: RotatedBox(
+                          quarterTurns: 1,
+                          child: Container(
+                            height: 10,
+                            width: MediaQuery.of(context).size.height*.25,
+                            child: LinearProgressIndicator(
+                              backgroundColor: Colors.green,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                              value: .7,
+                            ),
+                          ),
+                        ),
+                      ),
+
+
+                      Positioned(
+                        height: 90.0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          color: Colors.black12,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                "Compra mais recente em ",
+                                style: TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15.0
+                                ),
+                              ),
+                              Text(
+                                "Restaurante" + " no valor de " + " R\$ 32.45",
+                                style: TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15.0
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    ],
+                  ),
                 ),
               ),
             ),
