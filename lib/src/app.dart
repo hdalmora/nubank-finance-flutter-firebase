@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_finance/src/blocs/authentication/authentication_bloc_provider.dart';
 import 'package:flutter_finance/src/root_page.dart';
 import 'package:flutter_finance/src/ui/authentication/login_page.dart';
+import 'package:flutter_finance/src/ui/home/finance_history_page.dart';
 import 'package:flutter_finance/src/ui/home/home_page.dart';
 import 'package:flutter_finance/src/utils/values/colors.dart';
 
@@ -26,6 +27,7 @@ class NuFinance extends StatelessWidget {
             RootPage.routeName: (context) => RootPage(),
             LoginPage.routeName: (context) => LoginPage(),
             HomePage.routeName: (context) => HomePage(),
+            FinanceHistoryPage.routeName: (context) => FinanceHistoryPage()
           },
         ),
       ),

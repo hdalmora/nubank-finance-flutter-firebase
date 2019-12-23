@@ -7,6 +7,7 @@ import 'package:flutter_finance/src/ui/widgets/button_transparent_main.dart';
 import 'package:flutter_finance/src/utils/values/colors.dart';
 import 'package:flutter_finance/src/ui/widgets/form_field_main.dart';
 import 'package:flutter_finance/src/utils/values/string_constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 const double minHeight = 60.0;
@@ -30,6 +31,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   AuthenticationBloc _authBloc;
+  SharedPreferences _prefs;
 
   AnimationController _controller;
 
@@ -53,6 +55,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
+
+    SharedPreferences.getInstance().then((prefs) {
+      _prefs = prefs;
+    });
 
     _controller = AnimationController(
       vsync: this,
@@ -283,6 +289,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                               return ButtonTransparentMain(
                                                 callback: () async {
                                                   if(_authBloc.validateEmailAndPassword() && _authBloc.validateDisplayName()) {
+                                                    _authBloc.saveCurrentUserDisplayName(_prefs);
                                                     int response = await _authBloc.registerUser();
 
                                                     if (response < 0) {
@@ -300,6 +307,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                                 marginRight: 30.0,
                                                 marginLeft: 30.0,
                                                 text: 'Sign Up',
+                                                borderColor: ColorConstant.colorMainPurple,
+                                                textColor: ColorConstant.colorMainPurple,
                                               );
                                             } else {
                                               return CircularProgressIndicator(
@@ -445,6 +454,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                               marginRight: 30.0,
                                               marginLeft: 30.0,
                                               text: 'Login',
+                                              borderColor: ColorConstant.colorMainPurple,
+                                              textColor: ColorConstant.colorMainPurple,
                                             );
                                           } else {
                                             return CircularProgressIndicator(

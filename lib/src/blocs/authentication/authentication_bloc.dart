@@ -2,9 +2,11 @@
 import 'dart:async';
 
 import 'package:flutter_finance/src/resources/repository.dart';
+import 'package:flutter_finance/src/utils/prefs_manager.dart';
 import 'package:flutter_finance/src/utils/validator.dart';
 import 'package:flutter_finance/src/utils/values/string_constants.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../bloc.dart';
 
 class AuthenticationBloc implements Bloc {
@@ -65,8 +67,14 @@ class AuthenticationBloc implements Bloc {
     return false;
   }
 
+  void saveCurrentUserDisplayName(SharedPreferences prefs) {
+    print("SAVED DISPLAYNAME: " + _displayName.value);
+    PrefsManager prefsManager = PrefsManager();
+    prefsManager.setCurrentUserDisplayName(prefs, _displayName.value);
+  }
+
   bool validateDisplayName() {
-    return _displayName.value != null && _displayName.value.isNotEmpty;
+    return _displayName.value != null && _displayName.value.isNotEmpty && _displayName.value.length > 5;
   }
 
   // Firebase methods

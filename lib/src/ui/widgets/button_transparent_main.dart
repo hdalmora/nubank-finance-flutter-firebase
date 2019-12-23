@@ -9,6 +9,8 @@ class ButtonTransparentMain extends StatelessWidget {
   final double height;
   final double width;
   final double fontSize;
+  final Color borderColor;
+  final Color textColor;
 
   const ButtonTransparentMain({
     @required this.callback,
@@ -16,8 +18,10 @@ class ButtonTransparentMain extends StatelessWidget {
     @required this.marginLeft,
     @required this.marginRight,
     @required this.height,
-    @required this.width,
+    this.width,
     @required this.fontSize,
+    @required this.borderColor,
+    @required this.textColor,
   });
 
   @override
@@ -33,13 +37,13 @@ class ButtonTransparentMain extends StatelessWidget {
             color: Colors.transparent,
             border: Border.all(
                 width: 1,
-                color: ColorConstant.colorMainPurple
+                color: borderColor
             )
         ),
         child: Text(
           text,
           style: TextStyle(
-              color: ColorConstant.colorMainPurple,
+              color: textColor,
               fontWeight: FontWeight.w400,
               fontSize: fontSize
           ),
