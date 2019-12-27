@@ -6,6 +6,11 @@ class AuthenticationResources {
 
   Stream<FirebaseUser> get onAuthStateChange => _firebaseAuth.onAuthStateChanged;
 
+  Future<String> getUserUID() async {
+    final FirebaseUser user = await _firebaseAuth.currentUser();
+    return user.uid;
+  }
+
   Future<int> loginWithEmailAndPassword(String email, String password) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
