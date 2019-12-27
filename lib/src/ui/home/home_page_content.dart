@@ -375,7 +375,9 @@ class _HomePageContentState extends State<HomePageContent>
                                     ButtonTransparentMain(
                                       callback: () async {
                                         _insertNewQuickActionModal(context, "Set monthly Budget", () {
-
+                                          if(_userFinanceBloc.validateFinance()) {
+                                            _userFinanceBloc.setUserBudget();
+                                          }
                                         });
                                       },
                                       height: 60.0,
@@ -426,7 +428,9 @@ class _HomePageContentState extends State<HomePageContent>
                     actionText: "Budget mensal",
                     callback: () {
                       _insertNewQuickActionModal(context, "Setar Budget Mensal", () {
-
+                        if(_userFinanceBloc.validateFinance()) {
+                          _userFinanceBloc.setUserBudget();
+                        }
                       });
                     }
                   ),

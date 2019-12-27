@@ -44,7 +44,11 @@ class UserFinanceBloc implements Bloc {
   }
 
   Stream<DocumentSnapshot> userFinanceDoc(String userUID) => _repository.userFinanceDoc(userUID);
-  Future<void> setUserBudget(String userUID, double budget) => _repository.setUserBudget(userUID, budget);
+  Future<void> setUserBudget() async {
+    String userUID = await getUserUID();
+
+    return _repository.setUserBudget(userUID, double.tryParse(_financeValue.value));
+  }
 
   @override
   void dispose() async {
