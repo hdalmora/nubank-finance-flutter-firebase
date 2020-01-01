@@ -306,15 +306,18 @@ class _HomePageContentState extends State<HomePageContent>
                                   Positioned(
                                     right: 25,
                                     top: 20,
-                                    child: RotatedBox(
-                                      quarterTurns: 1,
-                                      child: Container(
-                                        height: 10,
-                                        width: MediaQuery.of(context).size.height*.25,
-                                        child: LinearProgressIndicator(
-                                          backgroundColor: Colors.green,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-                                          value: .7,
+                                    child: Hero(
+                                      tag: 'progress-budget',
+                                      child: RotatedBox(
+                                        quarterTurns: 1,
+                                        child: Container(
+                                          height: 10,
+                                          width: MediaQuery.of(context).size.height*.25,
+                                          child: LinearProgressIndicator(
+                                            backgroundColor: Colors.green,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                                            value: .7,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -416,7 +419,9 @@ class _HomePageContentState extends State<HomePageContent>
                     callback: () {
                       if(_isUserBudgetAlreadySet)
                         _insertNewQuickActionModal(context, "Incluir Despesa", () {
-
+                          if(_userFinanceBloc.validateFinance()) {
+                            _userFinanceBloc.addNewExpense();
+                          }
                         });
                       else
                         showErrorMessage(context, "You must set your monthly budget first");

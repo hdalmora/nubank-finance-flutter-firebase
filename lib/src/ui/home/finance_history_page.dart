@@ -102,6 +102,26 @@ class _FinanceHistoryPageState extends State<FinanceHistoryPage> {
               }
             ),
           ),
+
+          Positioned(
+            right: 0,
+            top: 0,
+            child: Hero(
+              tag: 'progress-budget',
+              child: RotatedBox(
+                quarterTurns: 1,
+                child: Container(
+                  height: 10,
+                  width: MediaQuery.of(context).size.height,
+                  child: LinearProgressIndicator(
+                    backgroundColor: Colors.green,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                    value: .7,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
