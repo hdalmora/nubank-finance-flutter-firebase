@@ -28,6 +28,8 @@ class _HomePageContentState extends State<HomePageContent>
   bool _hideOptions = true;
   bool _isUserBudgetAlreadySet = false;
 
+  double _expenseProgressValue = 0;
+
   @override
   void didChangeDependencies() {
     _userFinanceBloc = UserFinanceBlocProvider.of(context);
@@ -219,7 +221,8 @@ class _HomePageContentState extends State<HomePageContent>
                 onVerticalDragEnd: _handleDragEnd,
                 onTap: () {
                   if(_hideOptions)
-                    Navigator.pushNamed(context, FinanceHistoryPage.routeName);
+                    Navigator.pushNamed(context, FinanceHistoryPage.routeName,
+                        arguments: _expenseProgressValue);
                 },
                 child: Container(
                   margin: const EdgeInsets.only(left: 15.0, right: 15.0),
@@ -253,7 +256,7 @@ class _HomePageContentState extends State<HomePageContent>
                               if(availableLimit < 0)
                                 availableLimit = 0;
 
-
+                              _expenseProgressValue = totalSpent / budget;
 
                               _isUserBudgetAlreadySet = true;
                               return Stack(
@@ -329,7 +332,7 @@ class _HomePageContentState extends State<HomePageContent>
                                           child: LinearProgressIndicator(
                                             backgroundColor: Colors.green,
                                             valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-                                            value: .7,
+                                            value: _expenseProgressValue,
                                           ),
                                         ),
                                       ),
