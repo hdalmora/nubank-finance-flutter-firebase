@@ -14,4 +14,21 @@ class FirestoreResources {
       .setData({
         'budget': budget
       });
+
+  Future<void> addNewExpense(String userUID, double expenseValue) => _firestore
+      .collection("userFinance")
+      .document(userUID)
+      .collection("expenses")
+      .document()
+      .setData({
+        'value': expenseValue,
+        'timestamp': FieldValue.serverTimestamp()
+      });
+
+  Stream<QuerySnapshot> expensesList(String userUID) => _firestore
+      .collection("userFinance")
+      .document(userUID)
+      .collection("expenses")
+      .orderBy('timestamp', descending: true)
+      .snapshots();
 }
