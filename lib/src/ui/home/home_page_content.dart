@@ -243,8 +243,10 @@ class _HomePageContentState extends State<HomePageContent>
                           builder: (context, snapshot) {
                             if(snapshot.hasData && snapshot.data.exists) {
 
-                              double totalSpent = snapshot.data['totalSpent'].toDouble() ?? 0;
-                              double budget = snapshot.data['budget'].toDouble() ?? 0;
+                              double totalSpent = snapshot.data['totalSpent'] != null ?
+                              snapshot.data['totalSpent'].toDouble() : 0;
+                              double budget = snapshot.data['budget'] != null ?
+                              snapshot.data['budget'].toDouble() : 0;
 
                               double availableLimit = budget - totalSpent;
 

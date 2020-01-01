@@ -11,7 +11,7 @@ class FirestoreResources {
   Future<void> setUserBudget(String userUID, double budget) => _firestore
       .collection("userFinance")
       .document(userUID)
-      .setData({
+      .updateData({
         'budget': budget
       });
 
