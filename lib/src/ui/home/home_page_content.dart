@@ -1,11 +1,13 @@
 import 'dart:ui';
-import 'dart:math' as math;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_finance/src/blocs/user_finance/user_finance_bloc.dart';
 import 'package:flutter_finance/src/blocs/user_finance/user_finance_bloc_provider.dart';
 import 'package:flutter_finance/src/ui/widgets/bottom_action_button.dart';
 import 'package:flutter_finance/src/ui/widgets/options_buttons.dart';
+import '../../utils/values/colors.dart';
 import '../widgets/button_transparent_main.dart';
+import '../widgets/form_field_main.dart';
 import 'finance_history_page.dart';
 
 const double minTop = 145;
@@ -21,13 +23,14 @@ class _HomePageContentState extends State<HomePageContent>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
 
-  UserFinanceBloc _userFianceBloc;
+  UserFinanceBloc _userFinanceBloc;
 
   bool _hideOptions = true;
+  bool _isUserBudgetAlreadySet = false;
 
   @override
   void didChangeDependencies() {
-    _userFianceBloc = UserFinanceBlocProvider.of(context);
+    _userFinanceBloc = UserFinanceBlocProvider.of(context);
     super.didChangeDependencies();
   }
 
@@ -46,6 +49,11 @@ class _HomePageContentState extends State<HomePageContent>
     _controller.dispose();
 
     super.dispose();
+  }
+
+  void showErrorMessage(BuildContext context, String message) {
+    final snackbar = SnackBar(content: Text(message), duration: new Duration(seconds: 2));
+    Scaffold.of(context).showSnackBar(snackbar);
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
@@ -69,6 +77,55 @@ class _HomePageContentState extends State<HomePageContent>
   }
 
   double lerp(double min, double max) => lerpDouble(min, max, _controller.value);
+
+  void _insertNewQuickActionModal(BuildContext context, String title, VoidCallback confirmCallback){
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (BuildContext bc){
+          return Container(
+            height: MediaQuery.of(context).size.height * .7,
+            child: new Wrap(
+              children: <Widget>[
+                ListTile(
+                    leading: new Icon(Icons.money_off, size: 35.0,),
+                    title: new Text(title, style: TextStyle(fontSize: 26.0),),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 20.0),
+                  child: ListTile(
+                    title: StreamBuilder(
+                      stream: _userFinanceBloc.financeValue,
+                      builder: (context, snapshot) {
+                        return FormFieldMain(
+                          hintText: 'Valor...',
+                          onChanged: _userFinanceBloc.changeFinanceValue,
+                          errorText: snapshot.error,
+                          marginLeft: 20.0,
+                          marginRight: 20.0,
+                          marginTop: 0,
+                          textInputType: TextInputType.number,
+                          obscured: false,
+                        );
+                      },
+                    ),
+                    onTap: () => {},
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 50.0),
+                  child: ListTile(
+                    leading: new Icon(Icons.done, size: 28.0,),
+                    title: new Text('CONFIRMAR', style: TextStyle(fontSize: 20.0),),
+                    onTap: confirmCallback,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +194,7 @@ class _HomePageContentState extends State<HomePageContent>
 
                       ButtonTransparentMain(
                         callback: () {
-                          _userFianceBloc.signOut();
+                          _userFinanceBloc.signOut();
                         },
                         fontSize: 20.0,
                         height: 50,
@@ -171,118 +228,178 @@ class _HomePageContentState extends State<HomePageContent>
                     borderRadius: BorderRadius.vertical(
                         top: Radius.circular(8), bottom: Radius.circular(8)),
                   ),
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        top: 16,
-                        left: 16,
-                        child: Icon(
-                          Icons.credit_card,
-                          color: Colors.black38,
-                          size: 32.0,
-                        ),
-                      ),
-
-                      Positioned(
-                        top: MediaQuery.of(context).size.height*.14,
-                        left: 16,
-                        child: Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "GASTO ATUAL",
-                                style: TextStyle(
-                                    color: Colors.orange,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15.0
-                                ),
-                              ),
-                              Text(
-                                "R\$ 1500.00",
-                                style: TextStyle(
-                                    color: Colors.orange,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 30.0
-                                ),
-                              ),
-                              Row(
+                  child: FutureBuilder<String>(
+                    future: _userFinanceBloc.getUserUID(),
+                    builder: (context, snapshot) {
+                      if(!snapshot.hasData || snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            backgroundColor: Colors.white,
+                          ),
+                        );
+                      } else {
+                        return StreamBuilder<DocumentSnapshot>(
+                          stream: _userFinanceBloc.userFinanceDoc(snapshot.data),
+                          builder: (context, snapshot) {
+                            if(snapshot.hasData && snapshot.data.exists) {
+                              _isUserBudgetAlreadySet = true;
+                              return Stack(
                                 children: <Widget>[
-                                  Text(
-                                    "Limite disponível ",
-                                    style: TextStyle(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 15.0
+                                  Positioned(
+                                    top: 16,
+                                    left: 16,
+                                    child: Icon(
+                                      Icons.credit_card,
+                                      color: Colors.black38,
+                                      size: 32.0,
                                     ),
                                   ),
-                                  Text(
-                                    " R\$ 2545.00",
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15.0
+
+                                  Positioned(
+                                    top: MediaQuery.of(context).size.height*.14,
+                                    left: 16,
+                                    child: Container(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "GASTO ATUAL",
+                                            style: TextStyle(
+                                                color: Colors.orange,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15.0
+                                            ),
+                                          ),
+                                          Text(
+                                            "R\$ 1500.00",
+                                            style: TextStyle(
+                                                color: Colors.orange,
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 30.0
+                                            ),
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Text(
+                                                "Limite disponível ",
+                                                style: TextStyle(
+                                                    color: Colors.black87,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 15.0
+                                                ),
+                                              ),
+                                              Text(
+                                                " R\$ 2545.00",
+                                                style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15.0
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  Positioned(
+                                    right: 25,
+                                    top: 20,
+                                    child: Hero(
+                                      tag: 'progress-budget',
+                                      child: RotatedBox(
+                                        quarterTurns: 1,
+                                        child: Container(
+                                          height: 10,
+                                          width: MediaQuery.of(context).size.height*.25,
+                                          child: LinearProgressIndicator(
+                                            backgroundColor: Colors.green,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                                            value: .7,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+
+                                  Positioned(
+                                    height: 90.0,
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(16),
+                                      color: Colors.black12,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text(
+                                            "Compra mais recente em ",
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15.0
+                                            ),
+                                          ),
+                                          Text(
+                                            "Restaurante" + " no valor de " + " R\$ 32.45",
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15.0
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                              );
+                            } else {
+                              _isUserBudgetAlreadySet = false;
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      "You must set the monthly budget first",
+                                      style: TextStyle(
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15.0
+                                      ),
+                                    ),
 
-                      Positioned(
-                        right: 25,
-                        top: 20,
-                        child: RotatedBox(
-                          quarterTurns: 1,
-                          child: Container(
-                            height: 10,
-                            width: MediaQuery.of(context).size.height*.25,
-                            child: LinearProgressIndicator(
-                              backgroundColor: Colors.green,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-                              value: .7,
-                            ),
-                          ),
-                        ),
-                      ),
-
-
-                      Positioned(
-                        height: 90.0,
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          color: Colors.black12,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                "Compra mais recente em ",
-                                style: TextStyle(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 15.0
+                                    SizedBox(height: 30.0,),
+                                    ButtonTransparentMain(
+                                      callback: () async {
+                                        _insertNewQuickActionModal(context, "Set monthly Budget", () {
+                                          if(_userFinanceBloc.validateFinance()) {
+                                            _userFinanceBloc.setUserBudget();
+                                          }
+                                        });
+                                      },
+                                      height: 60.0,
+                                      width: MediaQuery.of(context).size.width,
+                                      fontSize: 20.0,
+                                      marginRight: 40.0,
+                                      marginLeft: 40.0,
+                                      text: 'Set monthly Budget',
+                                      borderColor: ColorConstant.colorMainPurple,
+                                      textColor: ColorConstant.colorMainPurple,
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              Text(
-                                "Restaurante" + " no valor de " + " R\$ 32.45",
-                                style: TextStyle(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 15.0
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                    ],
+                              );
+                            }
+                          },
+                        );
+                      }
+                    },
                   ),
                 ),
               ),
@@ -299,26 +416,44 @@ class _HomePageContentState extends State<HomePageContent>
                     icon: Icons.money_off,
                     iconSize: 32.0,
                     actionText: "Incluir despesa",
-                  ),
-                  BottomActionButton(
-                    icon: Icons.attach_money,
-                    iconSize: 32.0,
-                    actionText: "Incluir ganho",
+                    callback: () {
+                      if(_isUserBudgetAlreadySet)
+                        _insertNewQuickActionModal(context, "Incluir Despesa", () {
+                          if(_userFinanceBloc.validateFinance()) {
+                            _userFinanceBloc.addNewExpense();
+                          }
+                        });
+                      else
+                        showErrorMessage(context, "You must set your monthly budget first");
+                    },
                   ),
                   BottomActionButton(
                     icon: Icons.monetization_on,
                     iconSize: 32.0,
                     actionText: "Budget mensal",
+                    callback: () {
+                      _insertNewQuickActionModal(context, "Setar Budget Mensal", () {
+                        if(_userFinanceBloc.validateFinance()) {
+                          _userFinanceBloc.setUserBudget();
+                        }
+                      });
+                    }
                   ),
                   BottomActionButton(
                     icon: Icons.group_add,
                     iconSize: 32.0,
                     actionText: "Indicar amigos",
+                    callback: () {
+
+                    },
                   ),
                   BottomActionButton(
                     icon: Icons.help_outline,
                     iconSize: 32.0,
                     actionText: "Sobre",
+                    callback: () {
+
+                    },
                   ),
                 ],
               ),

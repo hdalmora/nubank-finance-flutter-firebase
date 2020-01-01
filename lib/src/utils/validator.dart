@@ -8,6 +8,10 @@ class Validator {
     return true;
   }
 
+  static bool validateFinanceValue(String number) {
+    return double.tryParse(number) != null;
+  }
+
   static bool validatePassword(String value) {
     if (value.length < 6)
       return false;
