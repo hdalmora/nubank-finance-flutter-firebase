@@ -242,6 +242,17 @@ class _HomePageContentState extends State<HomePageContent>
                           stream: _userFinanceBloc.userFinanceDoc(snapshot.data),
                           builder: (context, snapshot) {
                             if(snapshot.hasData && snapshot.data.exists) {
+
+                              double totalSpent = snapshot.data['totalSpent'].toDouble() ?? 0;
+                              double budget = snapshot.data['budget'].toDouble() ?? 0;
+
+                              double availableLimit = budget - totalSpent;
+
+                              if(availableLimit < 0)
+                                availableLimit = 0;
+
+
+
                               _isUserBudgetAlreadySet = true;
                               return Stack(
                                 children: <Widget>[
@@ -271,7 +282,7 @@ class _HomePageContentState extends State<HomePageContent>
                                             ),
                                           ),
                                           Text(
-                                            "R\$ 1500.00",
+                                            "R\$ " + totalSpent.toString(),
                                             style: TextStyle(
                                                 color: Colors.orange,
                                                 fontWeight: FontWeight.w400,
@@ -289,7 +300,7 @@ class _HomePageContentState extends State<HomePageContent>
                                                 ),
                                               ),
                                               Text(
-                                                " R\$ 2545.00",
+                                                " R\$ " + availableLimit.toString(),
                                                 style: TextStyle(
                                                     color: Colors.green,
                                                     fontWeight: FontWeight.bold,
