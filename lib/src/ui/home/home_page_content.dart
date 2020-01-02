@@ -233,8 +233,8 @@ class _HomePageContentState extends State<HomePageContent>
                   ),
                   child: FutureBuilder<String>(
                     future: _userFinanceBloc.getUserUID(),
-                    builder: (context, snapshot) {
-                      if(!snapshot.hasData || snapshot.connectionState == ConnectionState.waiting) {
+                    builder: (context, userUID) {
+                      if(!userUID.hasData || userUID.connectionState == ConnectionState.waiting) {
                         return Center(
                           child: CircularProgressIndicator(
                             backgroundColor: Colors.white,
@@ -242,7 +242,7 @@ class _HomePageContentState extends State<HomePageContent>
                         );
                       } else {
                         return StreamBuilder<DocumentSnapshot>(
-                          stream: _userFinanceBloc.userFinanceDoc(snapshot.data),
+                          stream: _userFinanceBloc.userFinanceDoc(userUID.data),
                           builder: (context, snapshot) {
                             if(snapshot.hasData && snapshot.data.exists) {
 
@@ -348,28 +348,56 @@ class _HomePageContentState extends State<HomePageContent>
                                     child: Container(
                                       padding: const EdgeInsets.all(16),
                                       color: Colors.black12,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            "Compra mais recente em ",
-                                            style: TextStyle(
-                                                color: Colors.black87,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15.0
-                                            ),
-                                          ),
-                                          Text(
-                                            "Restaurante" + " no valor de " + " R\$ 32.45",
-                                            style: TextStyle(
-                                                color: Colors.black87,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15.0
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                      child:
+                                        StreamBuilder(
+                                          stream: _userFinanceBloc.lastExpense(userUID.data),
+                                          builder: (context, snapshot) {
+                                            if(snapshot.hasData) {
+                                              List<DocumentSnapshot> docs = snapshot.data.documents;
+
+                                              if(docs.length > 0) {
+                                                return Center(
+                                                  child:
+                                                    Column(
+                                                      children: <Widget>[
+                                                        Text(
+                                                          "Gasto mais recente no valor de",
+                                                          style: TextStyle(
+                                                              color: Colors.black87,
+                                                              fontWeight: FontWeight
+                                                                  .w600,
+                                                              fontSize: 15.0
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          "R\$ " + docs[0]['value'].toString(),
+                                                          style: TextStyle(
+                                                              color: Colors.black87,
+                                                              fontWeight: FontWeight
+                                                                  .w600,
+                                                              fontSize: 15.0
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                );
+                                              } else {
+                                                return Center(
+                                                  child: Text(
+                                                    "Nenhum gasto recente",
+                                                    style: TextStyle(
+                                                        color: Colors.black87,
+                                                        fontWeight: FontWeight.w600,
+                                                        fontSize: 15.0
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            } else {
+                                              return Container();
+                                            }
+                                          },
+                                        ),
                                     ),
                                   ),
                                 ],

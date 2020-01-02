@@ -19,5 +19,6 @@ class Repository {
   Future<void> setUserBudget(String userUID, double budget) => _userFinanceResources.setUserBudget(userUID, budget);
   Future<void> addNewExpense(String userUID, double expenseValue) => _userFinanceResources.addNewExpense(userUID, expenseValue);
   Stream<QuerySnapshot> expensesList(String userUID) => _userFinanceResources.expensesList(userUID);
+  Stream<QuerySnapshot> lastExpense(String userUID) => _userFinanceResources.lastExpense(userUID);
 
 }

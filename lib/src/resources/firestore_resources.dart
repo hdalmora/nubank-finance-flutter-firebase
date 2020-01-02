@@ -31,4 +31,12 @@ class FirestoreResources {
       .collection("expenses")
       .orderBy('timestamp', descending: true)
       .snapshots();
+
+  Stream<QuerySnapshot> lastExpense(String userUID) => _firestore
+      .collection("userFinance")
+      .document(userUID)
+      .collection("expenses")
+      .orderBy('timestamp', descending: true)
+      .limit(1)
+      .snapshots();
 }
