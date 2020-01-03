@@ -10,7 +10,7 @@ The **NuFinance** Application is an attempt to clone the Nubank's app interface 
 
 ## Getting Started
 
-After creating the Flutter project, you need to configure Firebase. You can follow the official guidelines:
+**After cloning** the Flutter project, you need to configure Firebase. You can follow the official guidelines:
 
 - [Firebase: configuration for specific apps](https://firebase.google.com/docs/guides)
 
