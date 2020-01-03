@@ -35,6 +35,8 @@ class _FinanceHistoryPageState extends State<FinanceHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    double expenseProgressValue = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
@@ -116,7 +118,7 @@ class _FinanceHistoryPageState extends State<FinanceHistoryPage> {
                   child: LinearProgressIndicator(
                     backgroundColor: Colors.green,
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-                    value: .7,
+                    value: expenseProgressValue,
                   ),
                 ),
               ),

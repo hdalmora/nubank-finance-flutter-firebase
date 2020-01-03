@@ -13,7 +13,7 @@ class FirestoreResources {
       .document(userUID)
       .setData({
         'budget': budget
-      });
+      }, merge: true);
 
   Future<void> addNewExpense(String userUID, double expenseValue) => _firestore
       .collection("userFinance")
@@ -30,5 +30,13 @@ class FirestoreResources {
       .document(userUID)
       .collection("expenses")
       .orderBy('timestamp', descending: true)
+      .snapshots();
+
+  Stream<QuerySnapshot> lastExpense(String userUID) => _firestore
+      .collection("userFinance")
+      .document(userUID)
+      .collection("expenses")
+      .orderBy('timestamp', descending: true)
+      .limit(1)
       .snapshots();
 }

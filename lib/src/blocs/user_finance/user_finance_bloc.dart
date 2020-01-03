@@ -51,6 +51,7 @@ class UserFinanceBloc implements Bloc {
   }
 
   Stream<QuerySnapshot> expenseList(String userUID) => _repository.expensesList(userUID);
+  Stream<QuerySnapshot> lastExpense(String userUID) => _repository.lastExpense(userUID);
   Future<void> addNewExpense() async {
     String userUID = await getUserUID();
 

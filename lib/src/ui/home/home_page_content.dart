@@ -28,6 +28,8 @@ class _HomePageContentState extends State<HomePageContent>
   bool _hideOptions = true;
   bool _isUserBudgetAlreadySet = false;
 
+  double _expenseProgressValue = 0;
+
   @override
   void didChangeDependencies() {
     _userFinanceBloc = UserFinanceBlocProvider.of(context);
@@ -219,7 +221,8 @@ class _HomePageContentState extends State<HomePageContent>
                 onVerticalDragEnd: _handleDragEnd,
                 onTap: () {
                   if(_hideOptions)
-                    Navigator.pushNamed(context, FinanceHistoryPage.routeName);
+                    Navigator.pushNamed(context, FinanceHistoryPage.routeName,
+                        arguments: _expenseProgressValue);
                 },
                 child: Container(
                   margin: const EdgeInsets.only(left: 15.0, right: 15.0),
@@ -230,8 +233,8 @@ class _HomePageContentState extends State<HomePageContent>
                   ),
                   child: FutureBuilder<String>(
                     future: _userFinanceBloc.getUserUID(),
-                    builder: (context, snapshot) {
-                      if(!snapshot.hasData || snapshot.connectionState == ConnectionState.waiting) {
+                    builder: (context, userUID) {
+                      if(!userUID.hasData || userUID.connectionState == ConnectionState.waiting) {
                         return Center(
                           child: CircularProgressIndicator(
                             backgroundColor: Colors.white,
@@ -239,9 +242,22 @@ class _HomePageContentState extends State<HomePageContent>
                         );
                       } else {
                         return StreamBuilder<DocumentSnapshot>(
-                          stream: _userFinanceBloc.userFinanceDoc(snapshot.data),
+                          stream: _userFinanceBloc.userFinanceDoc(userUID.data),
                           builder: (context, snapshot) {
                             if(snapshot.hasData && snapshot.data.exists) {
+
+                              double totalSpent = snapshot.data['totalSpent'] != null ?
+                              snapshot.data['totalSpent'].toDouble() : 0;
+                              double budget = snapshot.data['budget'] != null ?
+                              snapshot.data['budget'].toDouble() : 0;
+
+                              double availableLimit = budget - totalSpent;
+
+                              if(availableLimit < 0)
+                                availableLimit = 0;
+
+                              _expenseProgressValue = totalSpent / budget;
+
                               _isUserBudgetAlreadySet = true;
                               return Stack(
                                 children: <Widget>[
@@ -271,7 +287,7 @@ class _HomePageContentState extends State<HomePageContent>
                                             ),
                                           ),
                                           Text(
-                                            "R\$ 1500.00",
+                                            "R\$ " + totalSpent.toString(),
                                             style: TextStyle(
                                                 color: Colors.orange,
                                                 fontWeight: FontWeight.w400,
@@ -289,7 +305,7 @@ class _HomePageContentState extends State<HomePageContent>
                                                 ),
                                               ),
                                               Text(
-                                                " R\$ 2545.00",
+                                                " R\$ " + availableLimit.toString(),
                                                 style: TextStyle(
                                                     color: Colors.green,
                                                     fontWeight: FontWeight.bold,
@@ -316,7 +332,7 @@ class _HomePageContentState extends State<HomePageContent>
                                           child: LinearProgressIndicator(
                                             backgroundColor: Colors.green,
                                             valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-                                            value: .7,
+                                            value: _expenseProgressValue,
                                           ),
                                         ),
                                       ),
@@ -332,28 +348,56 @@ class _HomePageContentState extends State<HomePageContent>
                                     child: Container(
                                       padding: const EdgeInsets.all(16),
                                       color: Colors.black12,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            "Compra mais recente em ",
-                                            style: TextStyle(
-                                                color: Colors.black87,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15.0
-                                            ),
-                                          ),
-                                          Text(
-                                            "Restaurante" + " no valor de " + " R\$ 32.45",
-                                            style: TextStyle(
-                                                color: Colors.black87,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15.0
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                      child:
+                                        StreamBuilder(
+                                          stream: _userFinanceBloc.lastExpense(userUID.data),
+                                          builder: (context, snapshot) {
+                                            if(snapshot.hasData) {
+                                              List<DocumentSnapshot> docs = snapshot.data.documents;
+
+                                              if(docs.length > 0) {
+                                                return Center(
+                                                  child:
+                                                    Column(
+                                                      children: <Widget>[
+                                                        Text(
+                                                          "Gasto mais recente no valor de",
+                                                          style: TextStyle(
+                                                              color: Colors.black87,
+                                                              fontWeight: FontWeight
+                                                                  .w600,
+                                                              fontSize: 15.0
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          "R\$ " + docs[0]['value'].toString(),
+                                                          style: TextStyle(
+                                                              color: Colors.black87,
+                                                              fontWeight: FontWeight
+                                                                  .w600,
+                                                              fontSize: 15.0
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                );
+                                              } else {
+                                                return Center(
+                                                  child: Text(
+                                                    "Nenhum gasto recente",
+                                                    style: TextStyle(
+                                                        color: Colors.black87,
+                                                        fontWeight: FontWeight.w600,
+                                                        fontSize: 15.0
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            } else {
+                                              return Container();
+                                            }
+                                          },
+                                        ),
                                     ),
                                   ),
                                 ],
